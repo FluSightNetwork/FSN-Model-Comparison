@@ -12,41 +12,7 @@ library(tidyverse)
 library(plotly)
 library(readr)
 
-setwd("~/reichlab/FSN_Model_Comparison")
-
-scores <- read_csv("data/scores.csv")
-models <- read_csv("data/model-id-map.csv")
-complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
-compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF-SEIRS","CU-EKF_SIRS",
-                 "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
-
-## define column with scores of interest
-SCORE_COL <- quo(`Multi bin score`)
-
-all_target_bounds <- read_csv("data/all-target-bounds.csv")
-
-## Remove scores that fall outside of evaluation period for a given target/season
-scores_trimmed <- scores %>%
-  dplyr::left_join(all_target_bounds, by = c("Season", "Target", "Location")) %>%
-  dplyr::filter(`Model Week` >= start_week_seq, `Model Week` <= end_week_seq)
-
-scores_adj <- scores_trimmed %>%
-  filter(Model %in% complete_models) %>%
-  ## if NA, NaN or <-10, set score to -10
-  mutate(score_adj = dplyr::if_else(is.nan(!!SCORE_COL) | is.na(!!SCORE_COL) , 
-                                    -10, 
-                                    !!SCORE_COL),
-        `Target Type` = dplyr::if_else(Target %in% c("Season onset", "Season peak week", "Season peak percentage"),
-                                      "seasonal", "k-week-ahead"),
-        `Model Type` = ifelse(Model %in% compartment, "Compartmental", "Non Compartmental")) %>%
-  mutate(score_adj = dplyr::if_else(score_adj < -10 , -10, score_adj)) 
-scores_adj <- scores_adj %>% filter(!(Epiweek %in% c(41, 42, 53)))
-scores_adj$Epiweek <- factor(scores_adj$Epiweek, levels = c(43:52, 1:18))
-
-regions  <- unique(scores_adj$Location)
-models <- complete_models
-seasons <- unique(scores_adj$Season)
-vars <- c("None", "Location", "Season", "Target", "Target Type", "Model", "Model Type")
+source("scripts/load_data.R")
 
 ui <- shinyUI(
   pageWithSidebar(
@@ -58,20 +24,17 @@ ui <- shinyUI(
                        helpText("This app allows you to visualize FluSight Network model performance over the past 7 influenza seasons, with a focus on by-epiweek performance. Created for the ReichLab by Evan Moore and Nicholas Reich."),
                        selectInput(
                          "location",
-                         label = h3("Select HHS Region:"),
+                         label = h3("What region would you like to see?"),
                          choices = regions),
+                       helpText("Plot Parameters"),
                        selectInput(
                          "location_color",
-                         label = h3("Select Color:"),
-                         choices = vars[!(vars %in% "Location")]),
+                         label = h4("Color:"),
+                         choices = vars_col[!(vars_col %in% "Location")]),
                        selectInput(
                          "location_facet",
-                         label = h3("Select Facet:"),
-                         choices = vars[!(vars %in% "Location")]),
-                       radioButtons("location_smooth", "Toggle Smoothed Regression Line",
-                                    c("On" = "on_location",
-                                      "Off" = "off_location"),
-                                    selected="off_location"),
+                         label = h4("Facet:"),
+                         choices = vars_fac[!(vars_fac %in% "Location")]),
                        hr()),
       
     #side panel 2
@@ -79,20 +42,17 @@ ui <- shinyUI(
                      helpText(""),
                      selectInput(
                        "season",
-                       label = h3("Select Season:"),
+                       label = h3("What season would you like to see?"),
                        choices = seasons),
+                     helpText("Plot Parameters"),
                      selectInput(
                        "season_color",
-                       label = h3("Select Color:"),
-                       choices = vars[!(vars %in% "Season")]),
+                       label = h3("Color:"),
+                       choices = vars_col[!(vars_col %in% "Season")]),
                      selectInput(
                        "season_facet",
-                       label = h3("Select Facet:"),
-                       choices = vars[!(vars %in% "Season")]),
-                     radioButtons("season_smooth", "Toggle Smoothed Regression Line",
-                                  c("On" = "on_season",
-                                    "Off" = "off_season"),
-                                  selected="off_season"),
+                       label = h3("Facet:"),
+                       choices = vars_fac[!(vars_fac %in% "Season")]),
                      hr()),
     
     #side panel 3
@@ -100,32 +60,33 @@ ui <- shinyUI(
                      helpText(""),
                      selectInput(
                        "model",
-                       label = h3("Select Model:"),
+                       label = h3("What model would you like to see?"),
                        choices = models),
+                     helpText("Plot Parameters"),
                      selectInput(
                        "model_color",
-                       label = h3("Select Color:"),
-                       choices = vars[!(vars %in% "Model")]),
+                       label = h3("Color:"),
+                       choices = vars_col[!(vars_col %in% "Model")]),
                      selectInput(
                        "model_facet",
-                       label = h3("Select Facet:"),
-                       choices = vars[!(vars %in% "Model")]),
-                     radioButtons("model_smooth", "Toggle Smoothed Regression Line",
-                                  c("On" = "on_model",
-                                    "Off" = "off_model"),
-                                  selected="off_model"),
+                       label = h3("Facet:"),
+                       choices = vars_fac[!(vars_fac %in% "Model")]),
                      hr())),
     
     #conditional main panel
     mainPanel(
       tabsetPanel(
-        tabPanel("Location", plotlyOutput("locationPlot"), value = 1,  
+        tabPanel("Results By Location", plotlyOutput("locationPlot"), value = 1,  
                  conditionalPanel(condition="input.tabselected==1")),
-        tabPanel("Season", plotlyOutput("seasonPlot"), value = 2,
+        tabPanel("By Season", plotlyOutput("seasonPlot"), value = 2,
                  conditionalPanel(condition="input.tabselected==2")),
-        tabPanel("Model", plotlyOutput("modelPlot"), value = 3,  
+        tabPanel("By Model", plotlyOutput("modelPlot"), value = 3,  
                  conditionalPanel(condition="input.tabselected==3")),
         id = "tabselected")
     )
   )
 )
+
+#what region do you want to see?
+#header for graphical params but better
+#then color and facet
