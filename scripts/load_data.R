@@ -2,6 +2,7 @@
 #Evan Moore
 #March 2018
 
+#figure out how to remove this line
 setwd("~/reichlab/FSN_Model_Comparison")
 
 scores <- read_csv("data/scores.csv")
