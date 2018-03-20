@@ -4,8 +4,6 @@ shinyServer(function(input, output, session) {
   
   #fix selecting by target type and model type
     #this is hard...
-  #fix smooth line
-  #increase size of all plots when facetting
   #fix color/facet when all option selected
   output$locationPlot <- renderPlotly({
      #group by all but currently selected

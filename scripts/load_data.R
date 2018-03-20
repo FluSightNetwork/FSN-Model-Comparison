@@ -14,8 +14,6 @@ compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF-SEIRS","CU-EKF_SIRS"
 ## define column with scores of interest
 SCORE_COL <- quo(`Multi bin score`)
 
-all_target_bounds <- read_csv("data/all-target-bounds.csv")
-
 scores_adj <- scores %>%
   filter(Model %in% complete_models) %>%
   ## if NA, NaN or <-10, set score to -10

@@ -24,9 +24,9 @@ ui <- shinyUI(
                        helpText("This app allows you to visualize FluSight Network model performance over the past 7 influenza seasons, with a focus on by-epiweek performance. Created for the ReichLab by Evan Moore and Nicholas Reich."),
                        selectInput(
                          "location",
-                         label = h3("What region would you like to see?"),
+                         label = h3("What region do you want to see?"),
                          choices = regions),
-                       helpText("Plot Parameters"),
+                       h3("Plot Elements"),
                        selectInput(
                          "location_color",
                          label = h4("Color:"),
@@ -42,16 +42,16 @@ ui <- shinyUI(
                      helpText(""),
                      selectInput(
                        "season",
-                       label = h3("What season would you like to see?"),
+                       label = h3("What season do you want to see?"),
                        choices = seasons),
-                     helpText("Plot Parameters"),
+                     h3("Plot Elements"),
                      selectInput(
                        "season_color",
-                       label = h3("Color:"),
+                       label = h4("Color:"),
                        choices = vars_col[!(vars_col %in% "Season")]),
                      selectInput(
                        "season_facet",
-                       label = h3("Facet:"),
+                       label = h4("Facet:"),
                        choices = vars_fac[!(vars_fac %in% "Season")]),
                      hr()),
     
@@ -60,16 +60,16 @@ ui <- shinyUI(
                      helpText(""),
                      selectInput(
                        "model",
-                       label = h3("What model would you like to see?"),
+                       label = h3("What model do you want to see?"),
                        choices = models),
-                     helpText("Plot Parameters"),
+                     h3("Plot Elements"),
                      selectInput(
                        "model_color",
-                       label = h3("Color:"),
+                       label = h4("Color:"),
                        choices = vars_col[!(vars_col %in% "Model")]),
                      selectInput(
                        "model_facet",
-                       label = h3("Facet:"),
+                       label = h4("Facet:"),
                        choices = vars_fac[!(vars_fac %in% "Model")]),
                      hr())),
     
@@ -86,7 +86,3 @@ ui <- shinyUI(
     )
   )
 )
-
-#what region do you want to see?
-#header for graphical params but better
-#then color and facet
