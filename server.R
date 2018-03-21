@@ -6,9 +6,8 @@ shinyServer(function(input, output, session) {
     #this is hard...
   #fix color/facet when all option selected
   output$locationPlot <- renderPlotly({
-     #group by all but currently selected
-    #then rebind to scores_adj with same cols in script
-    #create three new scores_adj subsets
+    
+    if (input$location != "All Regions"){
      dat <- scores_adj %>%
       group_by_("Location", "Epiweek",
         ifelse(input$location_color != "None", input$location_color, "Location"),
@@ -16,7 +15,17 @@ shinyServer(function(input, output, session) {
      dplyr::summarize(
         avg_score = mean(score_adj),
         Skill = exp(avg_score)) %>% 
-      filter(Location == input$location)
+      filter(Location == input$location) %>% 
+       na.omit()
+    } else {
+      dat <- all_location %>%
+        group_by_("Epiweek",
+                  ifelse(input$location_color != "None", input$location_color, "Epiweek"),
+                  ifelse(input$location_facet != "None", input$location_facet, "Epiweek")) %>% 
+        dplyr::summarize(
+          Skill = mean(exp(avg_score))) %>% 
+        na.omit()
+    }
      
      if (input$location_color == "None") {
        p <- ggplot(dat, aes(x = Epiweek, y = Skill, group = 1)) + 
@@ -46,6 +55,7 @@ shinyServer(function(input, output, session) {
   
   output$seasonPlot <- renderPlotly({
     
+    if (input$season != "All Seasons"){
     dat <- scores_adj %>%
       group_by_("Season", "Epiweek",
                 ifelse(input$season_color != "None", input$season_color, "Season"),
@@ -53,7 +63,17 @@ shinyServer(function(input, output, session) {
       dplyr::summarize(
         avg_score = mean(score_adj),
         Skill = exp(avg_score)) %>% 
-        filter(Season == input$season)
+        filter(Season == input$season) %>% 
+      na.omit()
+    } else {
+      dat <- all_season %>%
+        group_by_("Epiweek",
+                  ifelse(input$season_color != "None", input$season_color, "Epiweek"),
+                  ifelse(input$season_facet != "None", input$season_facet, "Epiweek")) %>% 
+        dplyr::summarize(
+          Skill = mean(exp(avg_score))) %>% 
+        na.omit()
+    }
     
     if (input$season_color == "None") {
       p <- ggplot(dat, aes(x = Epiweek, y = Skill, group = 1)) + 
@@ -83,6 +103,7 @@ shinyServer(function(input, output, session) {
   
   output$modelPlot <- renderPlotly({
     
+  if (input$model != "All Models"){  
     dat <- scores_adj %>%
       group_by_("Model", "Epiweek",
                 ifelse(input$model_color != "None", input$model_color, "Model"),
@@ -90,9 +111,18 @@ shinyServer(function(input, output, session) {
       dplyr::summarize(
         avg_score = mean(score_adj),
         Skill = exp(avg_score)) %>% 
-        filter(Model == input$model)
+        filter(Model == input$model) %>% 
+      na.omit()
+  } else {
+    dat <- all_model %>%
+      group_by_("Epiweek",
+                ifelse(input$model_color != "None", input$model_color, "Epiweek"),
+                ifelse(input$model_facet != "None", input$model_facet, "Epiweek")) %>% 
+      dplyr::summarize(
+        Skill = mean(exp(avg_score))) %>% 
+      na.omit()
+  }
 
-    
     if (input$model_color == "None") {
       p <- ggplot(dat, aes(x = Epiweek, y = Skill, group = 1)) + 
         geom_line(size = 1.05, alpha = 0.9)

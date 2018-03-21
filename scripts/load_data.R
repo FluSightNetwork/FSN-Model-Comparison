@@ -27,8 +27,21 @@ scores_adj <- scores %>%
 scores_adj <- scores_adj %>% filter(!(Epiweek %in% c(41, 42, 53)))
 scores_adj$Epiweek <- factor(scores_adj$Epiweek, levels = c(43:52, 1:18))
 
-regions  <- unique(scores_adj$Location)
-models <- complete_models
-seasons <- unique(scores_adj$Season)
+regions  <- c("All Regions", unique(scores_adj$Location))
+models <- c("All Models", complete_models)
+seasons <- c("All Seasons", unique(scores_adj$Season))
 vars_col <- c("None", "Location", "Season", "Target", "Target_Type", "Model", "Model_Type")
 vars_fac <- c("None", "Location", "Season", "Target", "Target_Type", "Model_Type")
+
+all_location <- scores_adj %>% 
+  group_by(Epiweek, Season, Target, Target_Type, Model, Model_Type) %>% 
+  summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
+
+all_season <- scores_adj %>% 
+  group_by(Epiweek, Location, Target, Target_Type, Model, Model_Type) %>% 
+  summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
+
+all_model <- scores_adj %>% 
+  group_by(Epiweek, Season, Target, Target_Type, Location, Model_Type) %>% 
+  summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
+
