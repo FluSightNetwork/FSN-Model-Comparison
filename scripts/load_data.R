@@ -1,15 +1,16 @@
-#script to load data and create relevant subserts for FSN model comparison app
+#script to load data and create relevant subsets for FSN model comparison app
 #Evan Moore
 #March 2018
 
 #figure out how to remove this line
-setwd("~/reichlab/FSN_Model_Comparison")
+#setwd("~/reichlab/FSN_Model_Comparison")
 
 scores <- read_csv("data/scores.csv")
 models <- read_csv("data/model-id-map.csv")
 complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
-compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF-SEIRS","CU-EKF_SIRS",
+compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS",
                  "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
+backfill <- c("LANL-DBM")
 
 ## define column with scores of interest
 SCORE_COL <- quo(`Multi bin score`)
@@ -33,6 +34,10 @@ seasons <- c("All Seasons", unique(scores_adj$Season))
 vars_col <- c("None", "Location", "Season", "Target", "Target_Type", "Model", "Model_Type")
 vars_fac <- c("None", "Location", "Season", "Target", "Target_Type", "Model_Type")
 
+heatmap_x <- c("Location", "Season", "Target")
+heatmap_fac <- c("None", "Target_Type")
+heatmap_highlight <- c("None", "Compartmental","Backfill")
+
 all_location <- scores_adj %>% 
   group_by(Epiweek, Season, Target, Target_Type, Model, Model_Type) %>% 
   summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
@@ -44,4 +49,6 @@ all_season <- scores_adj %>%
 all_model <- scores_adj %>% 
   group_by(Epiweek, Season, Target, Target_Type, Location, Model_Type) %>% 
   summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
+
+
 

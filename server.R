@@ -1,10 +1,45 @@
 library(shiny)
 
+compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS",
+                 "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
+backfill <- c("LANL-DBM")
+
 shinyServer(function(input, output, session) {
   
-  #fix selecting by target type and model type
-    #this is hard...
-  #fix color/facet when all option selected
+  output$heatmapPlot <- renderPlotly({
+    dat <- scores_adj %>%
+      group_by_("Model",
+                input$heatmap_x,
+                ifelse(input$heatmap_facet != "None", input$heatmap_facet, "Model")) %>% 
+      summarize(
+        avg_score = mean(score_adj),
+        Skill = exp(avg_score),
+        min_score = min(score_adj)
+      ) %>%
+      ungroup() %>%
+      mutate(Model = reorder(Model, avg_score))
+    
+    midpt <- mean(filter(dat, Model=="ReichLab-KDE")$Skill)
+    p <- ggplot(dat, 
+                aes_string(x=input$heatmap_x, fill="Skill", y="Model")) + 
+      geom_tile() + ylab(NULL) + xlab(NULL) +
+      geom_text(aes(label=round(Skill, 2))) +
+      scale_fill_gradient2(midpoint = midpt) +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    if (input$heatmap_facet != "None"){
+      p <- p + facet_grid(reformulate(".",input$heatmap_facet))    
+    }
+    if (input$heatmap_highlight != "None"){
+      if (input$heatmap_highlight == "Compartmental"){
+      p <- p + theme(axis.text.y=element_text(face=colorado(dat$Model, compartment)))
+      } else {
+        p <- p + theme(axis.text.y=element_text(face=colorado(dat$Model, backfill)))
+        }
+    }
+    ggplotly(p, tooltip=c("x","y","Skill")) %>% 
+    layout(height = 600, autosize=TRUE)
+  })
+  
   output$locationPlot <- renderPlotly({
     
     if (input$location != "All Regions"){

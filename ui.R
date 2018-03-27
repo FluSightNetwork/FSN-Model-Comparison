@@ -21,7 +21,24 @@ ui <- shinyUI(
     sidebarPanel(
       #side panel 1
       conditionalPanel(condition="input.tabselected==1",
-                       helpText("This app allows you to visualize FluSight Network model performance over the past 7 influenza seasons, with a focus on by-epiweek performance. Created for the ReichLab by Evan Moore and Nicholas Reich."),
+                       helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
+                       selectInput(
+                         "heatmap_x",
+                         label = h4("X-axis:"),
+                         choices = heatmap_x),
+                       selectInput(
+                         "heatmap_facet",
+                         label = h4("Facet:"),
+                         choices = heatmap_fac),
+                       selectInput(
+                         "heatmap_highlight",
+                         label = h4("Model type highlight:"),
+                         choices = heatmap_highlight),
+                       helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the", a("FluSight Network.", href="http://flusightnetwork.io/"), "This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency."),
+                       hr()),
+      #side panel 2
+      conditionalPanel(condition="input.tabselected==2",
+                       helpText("The following tabs focus on by-epiweek performance."),
                        selectInput(
                          "location",
                          label = h3("What region do you want to see?"),
@@ -37,8 +54,8 @@ ui <- shinyUI(
                          choices = vars_fac[!(vars_fac %in% "Location")]),
                        hr()),
       
-    #side panel 2
-    conditionalPanel(condition="input.tabselected==2",
+    #side panel 3
+    conditionalPanel(condition="input.tabselected==3",
                      helpText(""),
                      selectInput(
                        "season",
@@ -55,8 +72,8 @@ ui <- shinyUI(
                        choices = vars_fac[!(vars_fac %in% "Season")]),
                      hr()),
     
-    #side panel 3
-    conditionalPanel(condition="input.tabselected==3",
+    #side panel 4
+    conditionalPanel(condition="input.tabselected==4",
                      helpText(""),
                      selectInput(
                        "model",
@@ -66,22 +83,24 @@ ui <- shinyUI(
                      selectInput(
                        "model_color",
                        label = h4("Color:"),
-                       choices = vars_col[!(vars_col %in% "Model")]),
+                       choices = vars_col[!(vars_col %in% c("Model", "Model_Type"))]),
                      selectInput(
                        "model_facet",
                        label = h4("Facet:"),
-                       choices = vars_fac[!(vars_fac %in% "Model")]),
+                       choices = vars_fac[!(vars_fac %in% c("Model", "Model_Type"))]),
                      hr())),
     
     #conditional main panel
     mainPanel(
       tabsetPanel(
-        tabPanel("Results By Location", plotlyOutput("locationPlot"), value = 1,  
-                 conditionalPanel(condition="input.tabselected==1")),
-        tabPanel("By Season", plotlyOutput("seasonPlot"), value = 2,
+        tabPanel("Overall Results", plotlyOutput("heatmapPlot"), value = 1,
+                 conditionalPanel(condition = "input.tabselected==1")),
+        tabPanel("Results By Location", plotlyOutput("locationPlot"), value = 2,  
                  conditionalPanel(condition="input.tabselected==2")),
-        tabPanel("By Model", plotlyOutput("modelPlot"), value = 3,  
+        tabPanel("By Season", plotlyOutput("seasonPlot"), value = 3,
                  conditionalPanel(condition="input.tabselected==3")),
+        tabPanel("By Model", plotlyOutput("modelPlot"), value = 4,  
+                 conditionalPanel(condition="input.tabselected==4")),
         id = "tabselected")
     )
   )
