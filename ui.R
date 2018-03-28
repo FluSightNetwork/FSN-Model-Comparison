@@ -19,6 +19,10 @@ ui <- shinyUI(
     headerPanel("FluSight Network Model Comparison"),
     
     sidebarPanel(
+      tags$head(    
+        tags$style(type="text/css","label {display:inline;}")
+      ),
+
       #side panel 1
       conditionalPanel(condition="input.tabselected==1",
                        helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
@@ -34,7 +38,7 @@ ui <- shinyUI(
                          "heatmap_highlight",
                          label = h4("Model type highlight:"),
                          choices = heatmap_highlight),
-                       helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the", a("FluSight Network.", href="http://flusightnetwork.io/"), "This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency."),
+                       helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the", a("FluSight Network.", href="https://github.com/reichlab/flusight"), "This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency."),
                        hr()),
       #side panel 2
       conditionalPanel(condition="input.tabselected==2",
@@ -93,7 +97,7 @@ ui <- shinyUI(
     #conditional main panel
     mainPanel(
       tabsetPanel(
-        tabPanel("Overall Results", plotlyOutput("heatmapPlot"), value = 1,
+        tabPanel("Overall Results", plotOutput("heatmapPlot"), value = 1,
                  conditionalPanel(condition = "input.tabselected==1")),
         tabPanel("Results By Location", plotlyOutput("locationPlot"), value = 2,  
                  conditionalPanel(condition="input.tabselected==2")),
