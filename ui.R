@@ -19,8 +19,30 @@ ui <- shinyUI(
     headerPanel("FluSight Network Model Comparison"),
     
     sidebarPanel(
-      tags$head(    
-        tags$style(type="text/css","label {display:inline;}")
+      tags$head(
+        tags$style(type="text/css", 
+                   "label.control-label, .selectize-control.single { 
+         display: table-cell; 
+         text-align: center; 
+         vertical-align: middle; 
+      } 
+      label.control-label {
+        padding-right: 5px;
+      }
+      .form-group { 
+        display: table-row;
+      }
+      .selectize-control.single div.item {
+        padding-right: 5px;
+      }
+                      .selectize-input {
+                      white-space: nowrap;
+                      }
+                      .selectize-dropdown {
+                      width: 150px !important;
+                      }'
+              )
+            )")
       ),
 
       #side panel 1
@@ -45,7 +67,7 @@ ui <- shinyUI(
                        helpText("The following tabs focus on by-epiweek performance."),
                        selectInput(
                          "location",
-                         label = h3("What region do you want to see?"),
+                         label = h4("What region?"),
                          choices = regions),
                        h3("Plot Elements"),
                        selectInput(
@@ -63,7 +85,7 @@ ui <- shinyUI(
                      helpText(""),
                      selectInput(
                        "season",
-                       label = h3("What season do you want to see?"),
+                       label = h4("What season?"),
                        choices = seasons),
                      h3("Plot Elements"),
                      selectInput(
@@ -81,7 +103,7 @@ ui <- shinyUI(
                      helpText(""),
                      selectInput(
                        "model",
-                       label = h3("What model do you want to see?"),
+                       label = h4("What model?"),
                        choices = models),
                      h3("Plot Elements"),
                      selectInput(

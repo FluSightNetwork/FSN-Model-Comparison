@@ -27,6 +27,7 @@ scores_adj <- scores %>%
   mutate(score_adj = dplyr::if_else(score_adj < -10 , -10, score_adj)) 
 scores_adj <- scores_adj %>% filter(!(Epiweek %in% c(41, 42, 53)))
 scores_adj$Epiweek <- factor(scores_adj$Epiweek, levels = c(43:52, 1:18))
+scores_adj$Location <- factor(scores_adj$Location, levels = c("US National", "HHS Region 1", "HHS Region 2", "HHS Region 3", "HHS Region 4", "HHS Region 5","HHS Region 6", "HHS Region 7", "HHS Region 8", "HHS Region 9", "HHS Region 10"))
 
 regions  <- c("All Regions", unique(scores_adj$Location))
 models <- c("All Models", complete_models)
