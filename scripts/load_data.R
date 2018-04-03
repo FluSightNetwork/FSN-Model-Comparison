@@ -2,9 +2,6 @@
 #Evan Moore
 #March 2018
 
-#figure out how to remove this line
-#setwd("~/reichlab/FSN_Model_Comparison")
-
 scores <- read_csv("data/scores.csv")
 models <- read_csv("data/model-id-map.csv")
 complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
@@ -27,7 +24,6 @@ scores_adj <- scores %>%
   mutate(score_adj = dplyr::if_else(score_adj < -10 , -10, score_adj)) 
 scores_adj <- scores_adj %>% filter(!(Epiweek %in% c(41, 42, 53)))
 scores_adj$Epiweek <- factor(scores_adj$Epiweek, levels = c(43:52, 1:18))
-scores_adj$Location <- factor(scores_adj$Location, levels = c("US National", "HHS Region 1", "HHS Region 2", "HHS Region 3", "HHS Region 4", "HHS Region 5","HHS Region 6", "HHS Region 7", "HHS Region 8", "HHS Region 9", "HHS Region 10"))
 
 regions  <- c("All Regions", unique(scores_adj$Location))
 models <- c("All Models", complete_models)
@@ -51,5 +47,17 @@ all_model <- scores_adj %>%
   group_by(Epiweek, Season, Target, Target_Type, Location, Model_Type) %>% 
   summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
 
-
-
+#taken from https://stackoverflow.com/questions/39694490/highlighting-individual-axis-labels-in-bold-using-ggplot2
+colorado <- function(src, boulder) {
+  if (!is.factor(src)) src <- factor(src)                   # make sure it's a factor
+  src_levels <- levels(src)                                 # retrieve the levels in their order
+  brave <- boulder %in% src_levels                          # make sure everything we want to make bold is actually in the factor levels
+  if (all(brave)) {                                         # if so
+    b_pos <- purrr::map_int(boulder, ~which(.==src_levels)) # then find out where they are
+    b_vec <- rep("plain", length(src_levels))               # make'm all plain first
+    b_vec[b_pos] <- "bold"                                  # make our targets bold
+    b_vec                                                   # return the new vector
+  } else {
+    stop("All elements of 'boulder' must be in src")
+  }
+}

@@ -60,7 +60,7 @@ ui <- shinyUI(
                          "heatmap_highlight",
                          label = h4("Model type highlight:"),
                          choices = heatmap_highlight),
-                       helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the", a("FluSight Network.", href="https://github.com/reichlab/flusight"), "This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency."),
+                       helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency. View the source code on", a("Github.", href = "https://github.com/evanm31/FSN-Model-Comparison")),
                        hr()),
       #side panel 2
       conditionalPanel(condition="input.tabselected==2",
@@ -78,6 +78,7 @@ ui <- shinyUI(
                          "location_facet",
                          label = h4("Facet:"),
                          choices = vars_fac[!(vars_fac %in% "Location")]),
+                       helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency. View the source code on", a("Github.", href = "https://github.com/evanm31/FSN-Model-Comparison")),
                        hr()),
       
     #side panel 3
@@ -96,6 +97,7 @@ ui <- shinyUI(
                        "season_facet",
                        label = h4("Facet:"),
                        choices = vars_fac[!(vars_fac %in% "Season")]),
+                     helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency. View the source code on", a("Github.", href = "https://github.com/evanm31/FSN-Model-Comparison")),
                      hr()),
     
     #side panel 4
@@ -114,6 +116,7 @@ ui <- shinyUI(
                        "model_facet",
                        label = h4("Facet:"),
                        choices = vars_fac[!(vars_fac %in% c("Model", "Model_Type"))]),
+                     helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency. View the source code on", a("Github.", href = "https://github.com/evanm31/FSN-Model-Comparison")),
                      hr())),
     
     #conditional main panel
