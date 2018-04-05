@@ -4,28 +4,51 @@ compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS"
                  "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
 backfill <- c("LANL-DBM")
 
+theme_set(theme_minimal())
+
 shinyServer(function(input, output, session) {
   
   output$heatmapPlot <- renderPlot({
+    
     dat <- scores_adj %>%
       group_by_("Model",
                 input$heatmap_x,
-                ifelse(input$heatmap_facet != "None", input$heatmap_facet, "Model")) %>% 
-      summarize(
+                ifelse(input$heatmap_facet != "None", input$heatmap_facet, "Model")) %>%
+      summarise(
         avg_score = mean(score_adj),
         Skill = exp(avg_score),
         min_score = min(score_adj)
       ) %>%
       ungroup() %>%
       mutate(Model = reorder(Model, avg_score))
+
+    #   ## these lines create a new column with the 'baseline' model score 
+    #   group_by_("Season", input$heatmap_x,
+    #             ifelse(input$heatmap_facet != "None", input$heatmap_facet, "Season")) %>%
+    #   mutate(
+    #     baseline_score = avg_score[Model=="ReichLab_kde"] 
+    #   ) %>%
+    #   ungroup() %>%
+    #   ## these lines then create the skill for the baseline model and a "% skill change over baseline" column
+    #   mutate(
+    #     baseline_skill = exp(baseline_score),
+    #     pct_diff_baseline_skill = (skill - baseline_skill)/baseline_skill
+    #   )
+    # 
+    # specify_decimal <- function(x, k=0) trimws(format(round(x, k), nsmall=k))
+    # p <- ggplot(dat, aes_string(x=input$heatmap_x, y="Model", fill="pct_diff_baseline_skill")) +
+    #   geom_tile() + ylab(NULL) + xlab(NULL) +
+    #   geom_text(aes(label=specify_decimal(skill, 2))) +
+    #   scale_fill_gradient2(name = "% change \nfrom baseline") +
+    #   theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
     
     midpt <- mean(filter(dat, Model=="ReichLab-KDE")$Skill)
-    p <- ggplot(dat, 
-                aes_string(x=input$heatmap_x, fill="Skill", y="Model")) + 
+    p <- ggplot(dat,
+                aes_string(x=input$heatmap_x, fill="Skill", y="Model")) +
       geom_tile() + ylab(NULL) + xlab(NULL) +
       geom_text(aes(label=round(Skill, 2))) +
       scale_fill_gradient2(midpoint = midpt) +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+      theme(axis.text.x = element_text(angle = 90, hjust = 1))
     
     if (input$heatmap_highlight != "None"){
       if (input$heatmap_highlight == "Compartmental"){
