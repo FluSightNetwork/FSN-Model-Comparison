@@ -37,9 +37,12 @@ ui <- shinyUI(
       }
                       .selectize-input {
                       white-space: nowrap;
+                      padding: 25px;
+                      height: 25px !important;
                       }
                       .selectize-dropdown {
                       width: 150px !important;
+                      line-height: 25px; 
                       }'
               )
             )")
@@ -48,6 +51,7 @@ ui <- shinyUI(
       #side panel 1
       conditionalPanel(condition="input.tabselected==1",
                        helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
+                       h3("Plot Elements"),
                        selectInput(
                          "heatmap_x",
                          label = h4("X-axis:"),
@@ -58,7 +62,7 @@ ui <- shinyUI(
                          choices = heatmap_fac),
                        selectInput(
                          "heatmap_highlight",
-                         label = h4("Model type highlight:"),
+                         label = h4("Highlight:"),
                          choices = heatmap_highlight),
                        helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency. View the source code on", a("Github.", href = "https://github.com/evanm31/FSN-Model-Comparison")),
                        hr()),

@@ -25,16 +25,21 @@ shinyServer(function(input, output, session) {
       geom_tile() + ylab(NULL) + xlab(NULL) +
       geom_text(aes(label=round(Skill, 2))) +
       scale_fill_gradient2(midpoint = midpt) +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+      theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+    
     if (input$heatmap_highlight != "None"){
       if (input$heatmap_highlight == "Compartmental"){
-      p <- p + theme(axis.text.y=element_text(face=colorado(dat$Model, compartment)))
+        p <- p + theme(axis.text.y=element_text(face=highlight(dat$Model, compartment, "bold"), color = highlight(dat$Model, compartment, "col")))
       } else {
-        p <- p + theme(axis.text.y=element_text(face=colorado(dat$Model, backfill)))
-        }
+        p <- p + theme(axis.text.y=element_text(face=highlight(dat$Model, backfill, "bold"), color = highlight(dat$Model, backfill, "col")))
+      }
     }
     if (input$heatmap_facet != "None"){
-      p <- p + facet_grid(reformulate(".",input$heatmap_facet))    
+      if (input$heatmap_facet == "Target_Type" & input$heatmap_x == "Target") {
+        p <- p + facet_grid(reformulate(input$heatmap_facet,"."))   
+      } else {
+      p <- p + facet_grid(reformulate(".",input$heatmap_facet)) 
+    }
     }
     p
   }, height = 600, width = 600)
