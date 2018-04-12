@@ -4,7 +4,7 @@ compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS"
                  "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
 backfill <- c("LANL-DBM")
 
-theme_set(theme_minimal())
+theme_set(theme_bw())
 
 shinyServer(function(input, output, session) {
   
@@ -22,32 +22,26 @@ shinyServer(function(input, output, session) {
       ungroup() %>%
       mutate(Model = reorder(Model, avg_score))
 
-    #   ## these lines create a new column with the 'baseline' model score 
-    #   group_by_("Season", input$heatmap_x,
-    #             ifelse(input$heatmap_facet != "None", input$heatmap_facet, "Season")) %>%
-    #   mutate(
-    #     baseline_score = avg_score[Model=="ReichLab_kde"] 
-    #   ) %>%
-    #   ungroup() %>%
-    #   ## these lines then create the skill for the baseline model and a "% skill change over baseline" column
-    #   mutate(
-    #     baseline_skill = exp(baseline_score),
-    #     pct_diff_baseline_skill = (skill - baseline_skill)/baseline_skill
-    #   )
-    # 
-    # specify_decimal <- function(x, k=0) trimws(format(round(x, k), nsmall=k))
-    # p <- ggplot(dat, aes_string(x=input$heatmap_x, y="Model", fill="pct_diff_baseline_skill")) +
-    #   geom_tile() + ylab(NULL) + xlab(NULL) +
-    #   geom_text(aes(label=specify_decimal(skill, 2))) +
-    #   scale_fill_gradient2(name = "% change \nfrom baseline") +
-    #   theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
-    
-    midpt <- mean(filter(dat, Model=="ReichLab-KDE")$Skill)
-    p <- ggplot(dat,
-                aes_string(x=input$heatmap_x, fill="Skill", y="Model")) +
+    ## these lines create a new column with the 'baseline' model score
+    dat <- dat %>%   
+    group_by_(input$heatmap_x,
+                ifelse(input$heatmap_facet != "None", input$heatmap_facet, input$heatmap_x)) %>%
+      mutate(
+        baseline_score = avg_score[Model=="ReichLab-KDE"]
+      ) %>%
+      ungroup() %>%
+      ## these lines then create the skill for the baseline model and a "% skill change over baseline" column
+      mutate(
+        baseline_skill = exp(baseline_score),
+        pct_diff_baseline_skill = (Skill - baseline_skill)/baseline_skill
+      )
+
+    specify_decimal <- function(x, k=0) trimws(format(round(x, k), nsmall=k))
+    p <- ggplot(dat, aes_string(x=input$heatmap_x, y="Model", fill="pct_diff_baseline_skill")) +
       geom_tile() + ylab(NULL) + xlab(NULL) +
-      geom_text(aes(label=round(Skill, 2))) +
-      scale_fill_gradient2(midpoint = midpt) +
+      geom_text(aes(label=specify_decimal(Skill, 2))) +
+      scale_fill_gradient2(name = "% change \nfrom baseline") +
+      theme_minimal() +
       theme(axis.text.x = element_text(angle = 90, hjust = 1))
     
     if (input$heatmap_highlight != "None"){
@@ -59,7 +53,7 @@ shinyServer(function(input, output, session) {
     }
     if (input$heatmap_facet != "None"){
       if (input$heatmap_facet == "Target_Type" & input$heatmap_x == "Target") {
-        p <- p + facet_grid(reformulate(input$heatmap_facet,"."))   
+        p <- p + facet_grid(reformulate(input$heatmap_facet,"."), scales = "free_x")   
       } else {
       p <- p + facet_grid(reformulate(".",input$heatmap_facet)) 
     }
