@@ -50,6 +50,8 @@ shinyServer(function(input, output, session) {
       } else {
         p <- p + theme(axis.text.y=element_text(face=highlight(dat$Model, backfill, "bold"), color = highlight(dat$Model, backfill, "col")))
       }
+    } else {
+      p <- p + theme(axis.text.y = element_text(color = "black"))
     }
     if (input$heatmap_facet != "None"){
       if (input$heatmap_facet == "Target_Type" & input$heatmap_x == "Target") {
@@ -96,17 +98,17 @@ shinyServer(function(input, output, session) {
      }
      
       if (input$location_facet != "None") {
-        p = p + facet_wrap(as.formula(paste("~", input$location_facet)))
+        p = p + facet_wrap(as.formula(paste("~", input$location_facet)))#, drop = T, scales = "free_x", ncol = 3)
         if (!(input$location_facet %in% c("Target_Type", "Model_Type"))){
           ggplotly(p + labs(x = "Epiweek", y = "Model Skill") + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-            layout(height = 800, autosize=TRUE, margin = list(l = 60, b = 90))
+            layout(height = 800,  margin = list(l = 80, b = 90))
         } else {
           ggplotly(p + labs(x = "Epiweek", y = "Model Skill") + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-            layout(height = 550, autosize = TRUE, margin = list(l = 60, b = 90))
+            layout(height = 550,  margin = list(l = 80, b = 90))
         }
       } else {
         ggplotly(p + labs(x = "Epiweek", y = "Model Skill"), tooltip=c("x","y","colour")) %>% 
-             layout(height = 550, autosize = TRUE)
+             layout(height = 550)
       }
   })
   
@@ -145,13 +147,13 @@ shinyServer(function(input, output, session) {
     }
     
     if (input$season_facet != "None") {
-      p = p + facet_wrap(as.formula(paste("~", input$season_facet)))
+      p = p + facet_wrap(as.formula(paste("~", input$season_facet)))#, scales="free_x")
       if (!(input$season_facet %in% c("Target_Type", "Model_Type"))){
         ggplotly(p + labs(x = "Epiweek", y = "Model Skill") + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 800, autosize=TRUE, margin = list(l = 60, b = 90))
+          layout(height = 800, autosize=TRUE, margin = list(l = 80, b = 90))
       } else {
         ggplotly(p + labs(x = "Epiweek", y = "Model Skill") + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 600, autosize = TRUE, margin = list(l = 60, b = 90))
+          layout(height = 600, autosize = TRUE, margin = list(l = 80, b = 90))
       }
     } else {
       ggplotly(p + labs(x = "Epiweek", y = "Model Skill"), tooltip=c("x","y","colour")) %>% 
@@ -194,13 +196,13 @@ shinyServer(function(input, output, session) {
     }
     
     if (input$model_facet != "None") {
-      p = p + facet_wrap(as.formula(paste("~", input$model_facet)))
+      p = p + facet_wrap(as.formula(paste("~", input$model_facet)))#, scales = "free_x")
       if (!(input$model_facet %in% c("Target_Type", "Model_Type"))){
         ggplotly(p + labs(x = "Epiweek", y = "Model Skill") + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 800, autosize=TRUE, margin = list(l = 60, b = 90))
+          layout(height = 800, autosize=TRUE, margin = list(l = 80, b = 90))
       } else {
         ggplotly(p + labs(x = "Epiweek", y = "Model Skill") + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 550, autosize = TRUE, margin = list(l = 60, b = 90))
+          layout(height = 550, autosize = TRUE, margin = list(l = 80, b = 90))
       }
     } else {
       ggplotly(p + labs(x = "Epiweek", y = "Model Skill"), tooltip=c("x","y","colour")) %>% 
