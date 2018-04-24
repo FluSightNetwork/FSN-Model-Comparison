@@ -37,12 +37,12 @@ ui <- shinyUI(
       }
                       .selectize-input {
                       white-space: nowrap;
-                      padding: 25px;
-                      height: 25px !important;
+                      padding: 15px;
+                      height: 17px !important;
                       }
                       .selectize-dropdown {
                       width: 140px !important;
-                      line-height: 25px; 
+                      line-height: 17px; 
                       float: left;
                       text-align: left;
                       }'

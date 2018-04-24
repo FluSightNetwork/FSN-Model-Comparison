@@ -4,6 +4,7 @@
 
 scores <- read_csv("data/scores.csv")
 models <- read_csv("data/model-id-map.csv")
+point_ests <- read_csv("data/point_ests.csv")
 complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
 compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS",
                  "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
@@ -26,8 +27,13 @@ scores_adj <- scores_adj %>% filter(!(Epiweek %in% c(41, 42, 53)))
 scores_adj$Epiweek <- factor(scores_adj$Epiweek, levels = c(43:52, 1:18))
 scores_adj$Location <- factor(scores_adj$Location)
 levels(scores_adj$Location) <- unique(scores_adj$Location)
-#c("US National", "HHS Region 1", "HHS Region 2", "HHS Region 3", "HHS Region 4", "HHS Region 5", "HHS Region 6", "HHS Region 7", "HHS Region 8", "HHS Region 9", "HHS Region 10"))
 
+## test with point_ests
+
+point_ests <- point_ests %>% select(Model = model_name, Year, Epiweek = Calendar.Week, Target, err)
+point_ests$Epiweek <- as.factor(point_ests$Epiweek)
+
+##
 regions  <- c("All Regions", levels(scores_adj$Location))
 models <- c("All Models", complete_models)
 seasons <- c("All Seasons", unique(scores_adj$Season))
