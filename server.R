@@ -15,6 +15,7 @@ shinyServer(function(input, output, session) {
                 input$heatmap_x,
                 ifelse(input$heatmap_facet != "None", input$heatmap_facet, "Model")) %>%
       summarise(
+        err = mean(err),
         avg_score = mean(score_adj),
         Skill = exp(avg_score),
         min_score = min(score_adj)
@@ -35,7 +36,7 @@ shinyServer(function(input, output, session) {
         baseline_skill = exp(baseline_score),
         pct_diff_baseline_skill = (Skill - baseline_skill)/baseline_skill
       )
-
+    
     specify_decimal <- function(x, k=0) trimws(format(round(x, k), nsmall=k))
     p <- ggplot(dat, aes_string(x=input$heatmap_x, y="Model", fill="pct_diff_baseline_skill")) +
       geom_tile() + ylab(NULL) + xlab(NULL) +
@@ -71,6 +72,7 @@ shinyServer(function(input, output, session) {
         ifelse(input$location_color != "None", input$location_color, "Location"),
         ifelse(input$location_facet != "None", input$location_facet, "Epiweek")) %>% 
      dplyr::summarize(
+        avg_err = mean(err),
         avg_score = mean(score_adj),
         Skill = exp(avg_score)) %>% 
       filter(Location == input$location) %>% 
@@ -81,15 +83,17 @@ shinyServer(function(input, output, session) {
                   ifelse(input$location_color != "None", input$location_color, "Epiweek"),
                   ifelse(input$location_facet != "None", input$location_facet, "Epiweek")) %>% 
         dplyr::summarize(
+          avg_err = mean(err),
           Skill = mean(exp(avg_score))) %>% 
         na.omit()
     }
      
+    loc_y <- ifelse(input$location_y == "location_skill", 'Skill', 'avg_err')
      if (input$location_color == "None") {
-       p <- ggplot(dat, aes(x = Epiweek, y = Skill, group = 1)) + 
+       p <- ggplot(dat, aes_string(x = 'Epiweek', y = loc_y, group = 1)) + 
          geom_line(size = 1.1, alpha = 0.9)
      } else {
-       p <- ggplot(dat, aes(x = Epiweek, y = Skill)) + 
+       p <- ggplot(dat, aes_string(x = 'Epiweek', y = loc_y)) + 
          geom_line(size = 1.1, alpha = 0.9)
      }
 
@@ -121,7 +125,8 @@ shinyServer(function(input, output, session) {
                 ifelse(input$season_facet != "None", input$season_facet, "Epiweek")) %>% 
       dplyr::summarize(
         avg_score = mean(score_adj),
-        Skill = exp(avg_score)) %>% 
+        Skill = exp(avg_score),
+        avg_err = mean(err)) %>% 
         filter(Season == input$season) %>% 
       na.omit()
     } else {
@@ -130,15 +135,17 @@ shinyServer(function(input, output, session) {
                   ifelse(input$season_color != "None", input$season_color, "Epiweek"),
                   ifelse(input$season_facet != "None", input$season_facet, "Epiweek")) %>% 
         dplyr::summarize(
+          avg_err = mean(err),
           Skill = mean(exp(avg_score))) %>% 
         na.omit()
     }
     
+    seas_y <- ifelse(input$season_y == "season_skill", 'Skill', 'avg_err')
     if (input$season_color == "None") {
-      p <- ggplot(dat, aes(x = Epiweek, y = Skill, group = 1)) + 
+      p <- ggplot(dat, aes_string(x = 'Epiweek', y = seas_y, group = 1)) + 
         geom_line(size = 1.1, alpha = 0.9)
     } else {
-      p <- ggplot(dat, aes(x = Epiweek, y = Skill)) + 
+      p <- ggplot(dat, aes_string(x = 'Epiweek', y = seas_y)) + 
         geom_line(size = 1.1, alpha = 0.9)
     }
     
@@ -170,7 +177,8 @@ shinyServer(function(input, output, session) {
                 ifelse(input$model_facet != "None", input$model_facet, "Epiweek")) %>% 
       dplyr::summarize(
         avg_score = mean(score_adj),
-        Skill = exp(avg_score)) %>% 
+        Skill = exp(avg_score),
+        avg_err = mean(err)) %>% 
         filter(Model == input$model) %>% 
       na.omit()
   } else {
@@ -179,15 +187,16 @@ shinyServer(function(input, output, session) {
                 ifelse(input$model_color != "None", input$model_color, "Epiweek"),
                 ifelse(input$model_facet != "None", input$model_facet, "Epiweek")) %>% 
       dplyr::summarize(
+        avg_err = mean(err),
         Skill = mean(exp(avg_score))) %>% 
       na.omit()
   }
-
+    mod_y <- ifelse(input$model_y == "model_skill", 'Skill', 'avg_err')
     if (input$model_color == "None") {
-      p <- ggplot(dat, aes(x = Epiweek, y = Skill, group = 1)) + 
+      p <- ggplot(dat, aes_string(x = 'Epiweek', y = mod_y, group = 1)) + 
         geom_line(size = 1.05, alpha = 0.9)
     } else {
-      p <- ggplot(dat, aes(x = Epiweek, y = Skill)) + 
+      p <- ggplot(dat, aes_string(x = 'Epiweek', y = mod_y)) + 
         geom_line(size = 1.05, alpha = 0.9)
     }
     

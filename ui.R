@@ -90,6 +90,9 @@ ui <- shinyUI(
                          "location_facet",
                          label = h4("Facet:"),
                          choices = vars_fac[!(vars_fac %in% "Location")]),
+                       radioButtons("location_y", "Y-axis:",
+                                    c("Log Score" = "location_skill",
+                                      "Absolute Error" = "location_err")),
                        hr(),
                        helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency.")),
       
@@ -109,6 +112,9 @@ ui <- shinyUI(
                        "season_facet",
                        label = h4("Facet:"),
                        choices = vars_fac[!(vars_fac %in% "Season")]),
+                     radioButtons("season_y", "Y-axis:",
+                                  c("Log Score" = "season_skill",
+                                    "Absolute Error" = "season_err")),
                      hr(),
                      helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency.")),
     
@@ -128,6 +134,9 @@ ui <- shinyUI(
                        "model_facet",
                        label = h4("Facet:"),
                        choices = vars_fac[!(vars_fac %in% c("Model", "Model_Type"))]),
+                     radioButtons("model_y", "Y-axis:",
+                                  c("Log Score" = "model_skill",
+                                    "Absolute Error" = "model_err")),
                      hr(),
                      helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency."))),
     
