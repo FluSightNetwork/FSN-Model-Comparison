@@ -9,6 +9,7 @@ complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
 compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS",
                  "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
 backfill <- c("LANL-DBM")
+ensemble <- c("CU-BMA", "Delphi-Stat")
 
 ## define column with scores of interest
 SCORE_COL <- quo(`Multi bin score`)
@@ -38,7 +39,7 @@ point_ests$Model <- plyr::mapvalues(point_ests$Model, from = unique(point_ests$M
 "CU-EAKFC_SIRS", "CU-EKF_SEIRS", "CU-EKF_SIRS", "CU-RHF_SEIRS", "CU-RHF_SIRS", "CU-BMA",
 "Delphi-BasisRegression", "Delphi-DeltaDensity1", "Delphi-EmpiricalBayes2", "Delphi-EmpiricalBayes1", 
 "Delphi-EmpiricalFuture", "Delphi-EmpiricalTraj","Delphi-DeltaDensity2","Delphi-Stat",
-"Delphi-Uniform","LANL-DMB","ReichLab-KCDE","ReichLab-KDE","ReichLab-SARIMA1","ReichLab-SARIMA2"))
+"Delphi-Uniform","LANL-DBM","ReichLab-KCDE","ReichLab-KDE","ReichLab-SARIMA1","ReichLab-SARIMA2"))
 point_ests$Epiweek <- factor(point_ests$Epiweek, levels = c(43:52, 1:18))
 point_ests$Location <- factor(point_ests$Location)
 levels(point_ests$Location) <- unique(point_ests$Location)
@@ -54,7 +55,7 @@ vars_fac <- c("None", "Location", "Season", "Target", "Target_Type", "Model_Type
 
 heatmap_x <- c("Location", "Season", "Target")
 heatmap_fac <- c("None", "Target_Type")
-heatmap_highlight <- c("None", "Compartmental","Backfill")
+heatmap_highlight <- c("None", "Compartmental","Backfill", "Ensemble")
 
 all_location <- scores_adj %>% 
   group_by(Epiweek, Season, Target, Target_Type, Model, Model_Type) %>% 

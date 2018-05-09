@@ -37,12 +37,12 @@ ui <- shinyUI(
       }
                       .selectize-input {
                       white-space: nowrap;
-                      padding: 15px;
-                      height: 17px !important;
+                      padding: 18px;
+                      height: 20px !important;
                       }
                       .selectize-dropdown {
                       width: 140px !important;
-                      line-height: 17px; 
+                      line-height: 20px; 
                       float: left;
                       text-align: left;
                       }'
@@ -59,6 +59,7 @@ ui <- shinyUI(
       #side panel 2
       conditionalPanel(condition="input.tabselected==2",
                        helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
+                       hr(),
                        h3("Plot Elements"),
                        selectInput(
                          "heatmap_x",
@@ -81,6 +82,7 @@ ui <- shinyUI(
                          "location",
                          label = h4("What region?"),
                          choices = regions),
+                       hr(),
                        h3("Plot Elements"),
                        selectInput(
                          "location_color",
@@ -103,6 +105,7 @@ ui <- shinyUI(
                        "season",
                        label = h4("What season?"),
                        choices = seasons),
+                     hr(),
                      h3("Plot Elements"),
                      selectInput(
                        "season_color",
@@ -125,6 +128,7 @@ ui <- shinyUI(
                        "model",
                        label = h4("What model?"),
                        choices = models),
+                     hr(),
                      h3("Plot Elements"),
                      selectInput(
                        "model_color",
@@ -147,7 +151,7 @@ ui <- shinyUI(
                  helpText("The FluSight Network is a collaborative consortium of scientists and researchers participating in the CDC's annual \"Forecast the Influenza Season Collaborative Challenge\" (a.k.a. FluSight). While the most up-to-date predictions using ensemble forecasting methodology can be found on the", a("FluSight Network Website,", href = "http://flusightnetwork.io/"), "this app highlights \"meta-information\" about each of the component models' performances over various seasons, regions, and targets. For more information about the participants and their efforts made in ensemble forecasting, view this", a(href="http://reichlab.io/2017/11/28/flusight-ensemble.html", "blog post"), "on the ReichLab website."),
                  helpText("The FluSight challenge focuses on forecasts of the weighted percentage of doctor's office visits for influenza-like-illness (wILI) in a particular region. The FluSight challenges have defined seven forecasting targets of particular public health relevance. Three of these targets are fixed scalar values for a particular season: onset week, peak week, and peak intensity (i.e. the maximum observed wILI percentage). The remaining four targets are the observed wILI percentages in each of the subsequent four weeks."),
                  helpText("Each forecast is composed of a point estimate (or single best guess about that target) along with an associated confidence interval of potential values (representing uncertainty around that observation). Because national wILI data is received from the CDC at a two-week lag, 1 and 2 week-ahead forecasts are considered nowcasts (i.e. at or before the current time), while 3 and 4 week-ahead forecasts are considered proper forecasts, or estimates about events in the future."),
-                 helpText("Influenza forecasts have been evaluated by the CDC primarily using the log-score. While log scores are not on a particularly interpretable scale, exponentiating an average log score yields a forecast score equivalent to the geometric mean of the probabilities assigned to the eventually observed outcome. In this setting, this score has the intuitive interpretation of being the average probability assigned to the true outcome (where average is considered to be a geometric average). In this app, we will refer to skill as an exponentiated average log score"),
+                 helpText("Influenza forecasts have been evaluated by the CDC primarily using the log-score. While log scores are not on a particularly interpretable scale, exponentiating an average log score yields a forecast score equivalent to the geometric mean of the probabilities assigned to the eventually observed outcome. In this setting, this score has the intuitive interpretation of being the average probability assigned to the true outcome (where average is considered to be a geometric average). In this app, we will refer to skill as an exponentiated average log score, while absolute error refers to the average absolute difference between the predicted value and the truth."),
                  img(src = "timezero.png", width = "875px", height = "350px")),
         tabPanel("Overall Results", plotOutput("heatmapPlot"), value = 2,
                  conditionalPanel(condition = "input.tabselected==2")),
