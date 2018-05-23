@@ -9,6 +9,7 @@ complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
 compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS",
                  "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
 backfill <- c("LANL-DBM")
+ensemble <- c("Delphi-Stat")
 
 ## define column with scores of interest
 SCORE_COL <- quo(`Multi bin score`)
@@ -30,8 +31,19 @@ levels(scores_adj$Location) <- unique(scores_adj$Location)
 
 ## test with point_ests
 
-point_ests <- point_ests %>% select(Model = model_name, Year, Epiweek = Calendar.Week, Target, err)
-point_ests$Epiweek <- as.factor(point_ests$Epiweek)
+point_ests <- point_ests %>% select(Model = model_name, Year, Epiweek = Calendar.Week, Target, err, Location) %>% 
+  filter(!(Epiweek %in% c(41, 42, 53))) %>% 
+  na.omit()
+point_ests$Model <- plyr::mapvalues(point_ests$Model, from = unique(point_ests$Model), to = c("CU-EAKFC_SEIRS", 
+"CU-EAKFC_SIRS", "CU-EKF_SEIRS", "CU-EKF_SIRS", "CU-RHF_SEIRS", "CU-RHF_SIRS", "CU-BMA",
+"Delphi-BasisRegression", "Delphi-DeltaDensity1", "Delphi-EmpiricalBayes2", "Delphi-EmpiricalBayes1", 
+"Delphi-EmpiricalFuture", "Delphi-EmpiricalTraj","Delphi-DeltaDensity2","Delphi-Stat",
+"Delphi-Uniform","LANL-DBM","ReichLab-KCDE","ReichLab-KDE","ReichLab-SARIMA1","ReichLab-SARIMA2","UTAustin-edm"))
+point_ests$Epiweek <- factor(point_ests$Epiweek, levels = c(43:52, 1:18))
+point_ests$Location <- factor(point_ests$Location)
+levels(point_ests$Location) <- unique(point_ests$Location)
+
+scores_adj <- merge(scores_adj, point_ests)
 
 ##
 regions  <- c("All Regions", levels(scores_adj$Location))
@@ -42,19 +54,19 @@ vars_fac <- c("None", "Location", "Season", "Target", "Target_Type", "Model_Type
 
 heatmap_x <- c("Location", "Season", "Target")
 heatmap_fac <- c("None", "Target_Type")
-heatmap_highlight <- c("None", "Compartmental","Backfill")
+heatmap_highlight <- c("None", "Compartmental","Backfill", "Ensemble")
 
 all_location <- scores_adj %>% 
   group_by(Epiweek, Season, Target, Target_Type, Model, Model_Type) %>% 
-  summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
+  summarise(err = mean(err), avg_score = mean(score_adj),Skill = exp(avg_score))
 
 all_season <- scores_adj %>% 
   group_by(Epiweek, Location, Target, Target_Type, Model, Model_Type) %>% 
-  summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
+  summarise(err = mean(err), avg_score = mean(score_adj),Skill = exp(avg_score))
 
 all_model <- scores_adj %>% 
   group_by(Epiweek, Season, Target, Target_Type, Location, Model_Type) %>% 
-  summarise(avg_score = mean(score_adj),Skill = exp(avg_score))
+  summarise(err = mean(err), avg_score = mean(score_adj),Skill = exp(avg_score))
 
 #adapted from https://stackoverflow.com/questions/39694490/highlighting-individual-axis-labels-in-bold-using-ggplot2
 highlight <- function(src, boulder, type) {
