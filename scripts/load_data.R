@@ -4,7 +4,7 @@
 
 scores <- read_csv("data/scores.csv")
 models <- read_csv("data/model-id-map.csv")
-point_ests <- read_csv("data/point_ests.csv")
+point_ests <- read_csv("data/point_ests_adj.csv")
 complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
 compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS",
                  "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
@@ -32,6 +32,7 @@ levels(scores_adj$Location) <- unique(scores_adj$Location)
 ## test with point_ests
 
 point_ests <- point_ests %>% select(Model = model_name, Year, Epiweek = Calendar.Week, Target, err, Location) %>% 
+  mutate(err = abs(err)) %>% 
   filter(!(Epiweek %in% c(41, 42, 53))) %>% 
   na.omit()
 point_ests$Model <- plyr::mapvalues(point_ests$Model, from = unique(point_ests$Model), to = c("CU-EAKFC_SEIRS", 

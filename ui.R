@@ -23,30 +23,28 @@ ui <- shinyUI(
         tags$style(type="text/css", 
         "label.control-label, .selectize-control.single { 
          display: table-cell; 
-         text-align: left; 
-         vertical-align: left; 
+         text-align: center; 
+         vertical-align: middle; 
       } 
       label.control-label {
-        padding-right: 1px;
+        padding-right: 5px;
       }
       .form-group { 
         display: table-row;
       }
       .selectize-control.single div.item {
-        padding-right: 1px;
+        padding-right: 5px;
       }
                       .selectize-input {
-                      padding: 12px;
-                      height: 18px !important;
+                      white-space: nowrap;
+                      padding: 18px;
+                      height: 20px !important;
                       }
                       .selectize-dropdown {
                       width: 140px !important;
-                      line-height: 18px; 
-                      float: left; 
+                      line-height: 20px; 
+                      float: left;
                       text-align: left;
-                      }
-                      .selectize-input::after {
-                         visibility:hidden;
                       }'
               )
             )")
@@ -71,7 +69,7 @@ ui <- shinyUI(
                          "heatmap_facet",
                          label = h4("Facet:"),
                          choices = heatmap_fac),
-                       helpText("Select which type of model to highlight."),
+                       helpText("Select model type to highlight."),
                        selectInput(
                          "heatmap_highlight",
                          label = h4("Highlight:"),
