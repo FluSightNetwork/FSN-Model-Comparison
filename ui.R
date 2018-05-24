@@ -18,6 +18,7 @@ ui <- shinyUI(
   pageWithSidebar(
     headerPanel("FluSight Network Model Comparison"),
     
+    ## css for adjusting menu items
     sidebarPanel(
       tags$head(
         tags$style(type="text/css", 
@@ -49,14 +50,15 @@ ui <- shinyUI(
               )
             )")
       ),
-      #side panel 1
+      ## side panel 1 - about 
       conditionalPanel(condition="input.tabselected==1",
                        helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
                        helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency."),
                        hr(),
                        helpText(a("FluSight Network on GitHub", href = "https://github.com/FluSightNetwork/cdc-flusight-ensemble")),
                        helpText(a("FluSight Network Model Comparison App on GitHub", href = "https://github.com/evanm31/FSN-Model-Comparison"))),
-      #side panel 2
+      
+      ## side panel 2 - overall results
       conditionalPanel(condition="input.tabselected==2",
                        helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
                        hr(),
@@ -76,7 +78,8 @@ ui <- shinyUI(
                          choices = heatmap_highlight),
                        hr(),
                        helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency.")),
-      #side panel 3
+      
+      ## side panel 3 - results by region
       conditionalPanel(condition="input.tabselected==3",
                        helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
                        selectInput(
@@ -93,13 +96,14 @@ ui <- shinyUI(
                          "location_facet",
                          label = h4("Facet:"),
                          choices = vars_fac[!(vars_fac %in% "Location")]),
-                       radioButtons("location_y", "Y-axis:",
+                       radioButtons("location_y",
+                                    label = h4("Y-axis:"),
                                     c("Log Score" = "location_skill",
                                       "Absolute Error" = "location_err")),
                        hr(),
                        helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency.")),
       
-    #side panel 4
+    ## side panel 4 - results by season
     conditionalPanel(condition="input.tabselected==4",
                      helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
                      selectInput(
@@ -116,13 +120,14 @@ ui <- shinyUI(
                        "season_facet",
                        label = h4("Facet:"),
                        choices = vars_fac[!(vars_fac %in% "Season")]),
-                     radioButtons("season_y", "Y-axis:",
+                     radioButtons("season_y", 
+                                  label = h4("Y-axis:"),
                                   c("Log Score" = "season_skill",
                                     "Absolute Error" = "season_err")),
                      hr(),
                      helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency.")),
     
-    #side panel 5
+    ## side panel 5 - results by model
     conditionalPanel(condition="input.tabselected==5",
                      helpText("Visualize FluSight Network model performance over the past 7 influenza seasons."),
                      selectInput(
@@ -139,13 +144,14 @@ ui <- shinyUI(
                        "model_facet",
                        label = h4("Facet:"),
                        choices = vars_fac[!(vars_fac %in% c("Model", "Model_Type"))]),
-                     radioButtons("model_y", "Y-axis:",
+                     radioButtons("model_y", 
+                                  label = h4("Y-axis:"),
                                   c("Log Score" = "model_skill",
                                     "Absolute Error" = "model_err")),
                      hr(),
                      helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency."))),
     
-    #conditional main panel
+    ## conditional main panel
     mainPanel(
       tabsetPanel(
         tabPanel("About", value = 1,
