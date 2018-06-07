@@ -1,17 +1,10 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
-library(tidyverse)
+library(ggplot2)
+library(dplyr)
 library(plotly)
 library(readr)
 
+## retrieve data and other utilities from script
 source("scripts/load_data.R")
 
 ui <- shinyUI(
@@ -24,7 +17,7 @@ ui <- shinyUI(
         tags$style(type="text/css", 
         "label.control-label, .selectize-control.single { 
          display: table-cell; 
-         text-align: center; 
+         text-align: left; 
          vertical-align: middle; 
       } 
       label.control-label {
@@ -37,13 +30,13 @@ ui <- shinyUI(
         padding-right: 5px;
       }
                       .selectize-input {
-                      white-space: nowrap;
+       
                       padding: 18px;
-                      height: 20px !important;
+                      height: 16px !important;
                       }
                       .selectize-dropdown {
                       width: 140px !important;
-                      line-height: 20px; 
+                      line-height: 16px; 
                       float: left;
                       text-align: left;
                       }'
@@ -76,6 +69,9 @@ ui <- shinyUI(
                          "heatmap_highlight",
                          label = h4("Highlight:"),
                          choices = heatmap_highlight),
+                       helpText("Compartmental: Utilizes a mechanistic model of disease transmission that groups population into distinct compartments (e.g. SIR)"),
+                       helpText("Backfill: Takes into account that wILI measurements received from CDC may be only partially observed."),
+                       helpText("Ensemble: Forecasts are made up of a weighted average of other models' predictions."),
                        hr(),
                        helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency.")),
       

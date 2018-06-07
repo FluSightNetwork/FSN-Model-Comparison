@@ -158,11 +158,11 @@ shinyServer(function(input, output, session) {
           layout(height = 800, autosize=TRUE, margin = list(l = 80, b = 90))
       } else {
         ggplotly(p + labs(x = "Epiweek", y = seas_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 600, autosize = TRUE, margin = list(l = 80, b = 90))
+          layout(height = 550, autosize = TRUE, margin = list(l = 80, b = 90))
       }
     } else {
       ggplotly(p + labs(x = "Epiweek", y = seas_y), tooltip=c("x","y","colour")) %>% 
-        layout(height = 600, autosize = TRUE)
+        layout(height = 550, autosize = TRUE)
     }
   })
   

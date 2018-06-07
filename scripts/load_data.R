@@ -1,12 +1,13 @@
-## script to load/process data and create relevant subsets for FSN model comparison app
+## script to load data and create relevant subsets for FSN model comparison app
 ## Evan Moore
 ## March 2018
 
-## load necessary data and create vectors of info for later use in app
-scores <- read_csv("data/scores.csv")
-models <- read_csv("data/model-id-map.csv")
-point_ests <- read_csv("data/point_ests_adj.csv")
-complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
+## load and adjust levels of data
+scores_adj <- read_csv("data/scores_adj_final.csv")
+
+scores_adj$Epiweek <- factor(scores_adj$Epiweek, levels = c(43:52, 1:18))
+levels <- c("US National", "HHS Region 1", "HHS Region 2", "HHS Region 3", "HHS Region 4", "HHS Region 5", "HHS Region 6", "HHS Region 7", "HHS Region 8", "HHS Region 9", "HHS Region 10")
+scores_adj$Location <- factor(scores_adj$Location, levels = levels)
 
 ## for highlight option in overall results
 compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS",
@@ -14,46 +15,9 @@ compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS"
 backfill <- c("LANL-DBM")
 ensemble <- c("Delphi-Stat")
 
-## define column with scores of interest
-SCORE_COL <- quo(`Multi bin score`)
-
-scores_adj <- scores %>%
-  filter(Model %in% complete_models) %>%
-  ## if NA, NaN or <-10, set score to -10
-  mutate(score_adj = dplyr::if_else(is.nan(!!SCORE_COL) | is.na(!!SCORE_COL) , 
-                                    -10, 
-                                    !!SCORE_COL),
-         Target_Type = dplyr::if_else(Target %in% c("Season onset", "Season peak week", "Season peak percentage"),
-                                        "seasonal", "k-week-ahead"),
-         Model_Type = ifelse(Model %in% compartment, "Compartmental", "Non Compartmental")) %>%
-  mutate(score_adj = dplyr::if_else(score_adj < -10 , -10, score_adj)) 
-
-## remove extra weeks and adjust ordering of location and week variables
-scores_adj <- scores_adj %>% filter(!(Epiweek %in% c(41, 42, 53)))
-scores_adj$Epiweek <- factor(scores_adj$Epiweek, levels = c(43:52, 1:18))
-scores_adj$Location <- factor(scores_adj$Location)
-levels(scores_adj$Location) <- unique(scores_adj$Location)
-
-## process point ests in similar manner and rename model variable to facilitate a join
-point_ests <- point_ests %>% select(Model = model_name, Year, Epiweek = Calendar.Week, Target, err, Location) %>% 
-  mutate(err = abs(err)) %>% 
-  filter(!(Epiweek %in% c(41, 42, 53))) %>% 
-  na.omit()
-point_ests$Model <- plyr::mapvalues(point_ests$Model, from = unique(point_ests$Model), to = c("CU-EAKFC_SEIRS", 
-"CU-EAKFC_SIRS", "CU-EKF_SEIRS", "CU-EKF_SIRS", "CU-RHF_SEIRS", "CU-RHF_SIRS", "CU-BMA",
-"Delphi-BasisRegression", "Delphi-DeltaDensity1", "Delphi-EmpiricalBayes2", "Delphi-EmpiricalBayes1", 
-"Delphi-EmpiricalFuture", "Delphi-EmpiricalTraj","Delphi-DeltaDensity2","Delphi-Stat",
-"Delphi-Uniform","LANL-DBM","ReichLab-KCDE","ReichLab-KDE","ReichLab-SARIMA1","ReichLab-SARIMA2","UTAustin-edm"))
-point_ests$Epiweek <- factor(point_ests$Epiweek, levels = c(43:52, 1:18))
-point_ests$Location <- factor(point_ests$Location)
-levels(point_ests$Location) <- unique(point_ests$Location)
-
-## merge dataset to use in both skill and error plots
-scores_adj <- merge(scores_adj, point_ests)
-
 ## variables used in model UI 
-regions  <- c("All Regions", levels(scores_adj$Location))
-models <- c("All Models", complete_models)
+regions  <- c("All Regions", levels)
+models <- c("All Models", unique(scores_adj$Model))
 seasons <- c("All Seasons", unique(scores_adj$Season))
 vars_col <- c("None", "Location", "Season", "Target", "Target_Type", "Model", "Model_Type")
 vars_fac <- c("None", "Location", "Season", "Target", "Target_Type", "Model_Type")
