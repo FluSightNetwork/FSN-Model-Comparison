@@ -4,12 +4,16 @@ theme_set(theme_bw())
 
 shinyServer(function(input, output, session) {
   
+  ## side panel 2 
   output$heatmapPlot <- renderPlot({
     
+    ## process data for plot  
     dat <- scores_adj %>%
+      ## conditionally `group_by` using string inputs
+      ## grouping by same variable twice has no effect - used when no facet is selected
       group_by_("Model",
                 input$heatmap_x,
-                ifelse(input$heatmap_facet != "None", input$heatmap_facet, "Model")) %>%
+                ifelse(input$heatmap_facet != "None", input$heatmap_facet, "Model")) %>% 
       summarise(
         avg_score = mean(score_adj),
         Skill = exp(avg_score),
@@ -32,15 +36,18 @@ shinyServer(function(input, output, session) {
         pct_diff_baseline_skill = ((Skill - baseline_skill)/baseline_skill) * 100
       )
     
+    ## used to specify precision of heatmap labels
     specify_decimal <- function(x, k=0) trimws(format(round(x, k), nsmall=k))
     
+    ## heatmap plot
     p <- ggplot(dat, aes_string(x=input$heatmap_x, y="Model", fill="pct_diff_baseline_skill")) +
       geom_tile() + ylab(NULL) + xlab(NULL) +
       geom_text(aes(label=specify_decimal(Skill, 2))) +
       scale_fill_gradient2(name = "% change \nfrom baseline") +
-      theme_minimal() +
+      theme_minimal() + #override theme_bw()
       theme(axis.text.x = element_text(angle = 90, hjust = 1))
     
+    ## conditionally highlight based on input
     if (input$heatmap_highlight != "None"){
       if (input$heatmap_highlight == "Compartmental"){
         p <- p + theme(axis.text.y=element_text(face=highlight(dat$Model, compartment, "bold"), color = highlight(dat$Model, compartment, "col")))
@@ -49,32 +56,42 @@ shinyServer(function(input, output, session) {
       } else {
         p <- p + theme(axis.text.y=element_text(face=highlight(dat$Model, ensemble, "bold"), color = highlight(dat$Model, ensemble, "col")))
       }
+    ## if no highlight, make all font black
     } else {
       p <- p + theme(axis.text.y = element_text(color = "black"))
     }
+    
+    ## conditionally add facet if selected
     if (input$heatmap_facet != "None"){
+      ## special case for when target and target type both selected
       if (input$heatmap_facet == "Target_Type" & input$heatmap_x == "Target") {
         p <- p + facet_grid(reformulate(input$heatmap_facet,"."), scales = "free_x")   
+      ## regular case for otherwise  
       } else {
-      p <- p + facet_grid(reformulate(".",input$heatmap_facet)) 
-    }
+        p <- p + facet_grid(reformulate(".",input$heatmap_facet)) 
+      }
     }
     p
+  ## size specified after renderPlot() function for non-interactive ggplot output
   }, height = 600, width = 600)
-  
+
+  ## side panel 3 - all additional panels have the same structure, so the comments
+  ## apply to the code used in side panels 4 and 5 in the same way they do here.
   output$locationPlot <- renderPlotly({
     
+    ## normal case - conditionally group by user inputs and filter based on given location 
     if (input$location != "All Regions"){
      dat <- scores_adj %>%
-      group_by_("Location", "Epiweek",
+     group_by_("Location", "Epiweek",
         ifelse(input$location_color != "None", input$location_color, "Location"),
         ifelse(input$location_facet != "None", input$location_facet, "Epiweek")) %>% 
      dplyr::summarize(
         Error = mean(err),
         avg_score = mean(score_adj),
         Skill = exp(avg_score)) %>% 
-      filter(Location == input$location) %>% 
+      dplyr::filter(Location == input$location) %>% 
        na.omit()
+    ## special case for when all regions option is selected 
     } else {
       dat <- all_location %>%
         group_by_("Epiweek",
@@ -85,35 +102,44 @@ shinyServer(function(input, output, session) {
           Skill = mean(exp(avg_score))) %>% 
         na.omit()
     }
-     
+    
+    ## specify y-axis label based on radio button input 
     loc_y <- ifelse(input$location_y == "location_skill", 'Skill', 'Error')
-     if (input$location_color == "None") {
-       p <- ggplot(dat, aes_string(x = 'Epiweek', y = loc_y, group = 1)) + 
-         geom_line(size = 1.1, alpha = 0.9)
-     } else {
-       p <- ggplot(dat, aes_string(x = 'Epiweek', y = loc_y)) + 
-         geom_line(size = 1.1, alpha = 0.9)
-     }
+    
+    ## create ggplot object, with group = 1 if no color option selected
+    if (input$location_color == "None") {
+      p <- ggplot(dat, aes_string(x = 'Epiweek', y = loc_y, group = 1)) + 
+      geom_line(size = 1.1, alpha = 0.9)
+    } else {
+      p <- ggplot(dat, aes_string(x = 'Epiweek', y = loc_y)) + 
+      geom_line(size = 1.1, alpha = 0.9)
+    }
 
-     if (input$location_color != "None") {
-       p = p + aes_string(col = input$location_color, group = input$location_color)
-     }
+    ## add color if selected   
+    if (input$location_color != "None") {
+      p = p + aes_string(col = input$location_color, group = input$location_color)
+    }
      
-      if (input$location_facet != "None") {
-        p = p + facet_wrap(as.formula(paste("~", input$location_facet)))#, drop = T, scales = "free_x", ncol = 3)
-        if (!(input$location_facet %in% c("Target_Type", "Model_Type"))){
-          ggplotly(p + labs(x = "Epiweek", y = loc_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-            layout(height = 800,  margin = list(l = 80, b = 90))
-        } else {
-          ggplotly(p + labs(x = "Epiweek", y = loc_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-            layout(height = 550,  margin = list(l = 80, b = 90))
-        }
+    ## add facet is selected
+    if (input$location_facet != "None") {
+      p = p + facet_wrap(as.formula(paste("~", input$location_facet)))#, scales = "free_x") - removes unused plots in facet wrap, but changes sizes of rows
+      ## add facet, increasing height if selected facet has many different levels
+      if (!(input$location_facet %in% c("Target_Type", "Model_Type"))){
+        ggplotly(p + labs(x = "Epiweek", y = loc_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
+        layout(height = 800,  margin = list(l = 80, b = 90)) #adjust x and y margin so axis labels are not cut off
+      ## else if target or model type selected, height is normal 
       } else {
-        ggplotly(p + labs(x = "Epiweek", y = loc_y), tooltip=c("x","y","colour")) %>% 
-             layout(height = 550)
+        ggplotly(p + labs(x = "Epiweek", y = loc_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
+        layout(height = 550,  margin = list(l = 80, b = 90))
       }
+    ## otherwise, output plot with regular height   
+    } else {
+      ggplotly(p + labs(x = "Epiweek", y = loc_y), tooltip=c("x","y","colour")) %>% 
+      layout(height = 550)
+    }
   })
   
+  ## side panel 4 
   output$seasonPlot <- renderPlotly({
     
     if (input$season != "All Seasons"){
@@ -125,7 +151,7 @@ shinyServer(function(input, output, session) {
         avg_score = mean(score_adj),
         Skill = exp(avg_score),
         Error = mean(err)) %>% 
-        filter(Season == input$season) %>% 
+        dplyr::filter(Season == input$season) %>% 
       na.omit()
     } else {
       dat <- all_season %>%
@@ -166,6 +192,7 @@ shinyServer(function(input, output, session) {
     }
   })
   
+  ## side panel 5 
   output$modelPlot <- renderPlotly({
     
   if (input$model != "All Models"){  
@@ -177,7 +204,7 @@ shinyServer(function(input, output, session) {
         avg_score = mean(score_adj),
         Skill = exp(avg_score),
         Error = mean(err)) %>% 
-        filter(Model == input$model) %>% 
+        dplyr::filter(Model == input$model) %>% 
       na.omit()
   } else {
     dat <- all_model %>%

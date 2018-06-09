@@ -11,7 +11,7 @@ ui <- shinyUI(
   pageWithSidebar(
     headerPanel("FluSight Network Model Comparison"),
     
-    ## css for adjusting menu items
+    ## css to adjust menu items - puts label and drop down menu on same line
     sidebarPanel(
       tags$head(
         tags$style(type="text/css", 
@@ -29,16 +29,16 @@ ui <- shinyUI(
       .selectize-control.single div.item {
         padding-right: 5px;
       }
-                      .selectize-input {
-       
-                      padding: 18px;
-                      height: 16px !important;
+                     .selectize-input {
+                        padding: 8px;
+                        height: 10px !important;
+                        width: 150px;
                       }
                       .selectize-dropdown {
-                      width: 140px !important;
-                      line-height: 16px; 
-                      float: left;
-                      text-align: left;
+                        width: 150px;
+                        line-height: 10px; !important
+                        float: left;
+                        text-align: left;
                       }'
               )
             )")
@@ -69,7 +69,7 @@ ui <- shinyUI(
                          "heatmap_highlight",
                          label = h4("Highlight:"),
                          choices = heatmap_highlight),
-                       helpText("Compartmental: Utilizes a mechanistic model of disease transmission that groups population into distinct compartments (e.g. SIR)"),
+                       helpText("Compartmental: Utilizes a mechanistic model of disease transmission that groups population into distinct compartments (e.g. ", a("SIR", href = "https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model"),")."),
                        helpText("Backfill: Takes into account that wILI measurements received from CDC may be only partially observed."),
                        helpText("Ensemble: Forecasts are made up of a weighted average of other models' predictions."),
                        hr(),
