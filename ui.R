@@ -49,7 +49,7 @@ ui <- shinyUI(
                        helpText("This app was created by Evan R Moore and Nicholas G Reich at the University of Massachusetts-Amherst, in collaboration with the FluSight Network. This work was funded in part by the U.S. National Institutes of Health MIDAS program (R35GM119582) and a DARPA Young Faculty Award (Dl6AP00144). The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institute Of General Medical Sciences, the National Institutes of Health, or the Defense Advanced Projects Research Agency."),
                        hr(),
                        helpText(a("FluSight Network on GitHub", href = "https://github.com/FluSightNetwork/cdc-flusight-ensemble")),
-                       helpText(a("FluSight Network Model Comparison App on GitHub", href = "https://github.com/evanm31/FSN-Model-Comparison"))),
+                       helpText(a("FluSight Network Model Comparison App on GitHub", href = "https://github.com/FluSightNetwork/FSN-Model-Comparison"))),
       
       ## side panel 2 - overall results
       conditionalPanel(condition="input.tabselected==2",
