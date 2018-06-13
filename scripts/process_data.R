@@ -5,8 +5,10 @@
 ## load necessary data
 scores <- read_csv("data/scores.csv")
 models <- read_csv("data/model-id-map.csv")
-point_ests <- read_csv("data/point_ests_adj.csv")
+point_ests <- read_csv("data/point_ests_adj2.csv")
 complete_models <- c(models$`model-id`[models$complete=="true"], "UTAustin-edm")
+compartment <- c("CU-EAKFC_SEIRS", "CU-EAKFC_SIRS", "CU-EKF_SEIRS","CU-EKF_SIRS",
+                 "CU-RHF_SIRS","CU-RHF_SEIRS","LANL-DBM")
 
 ## define column with scores of interest
 SCORE_COL <- quo(`Multi bin score`)
