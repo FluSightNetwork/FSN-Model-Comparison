@@ -126,16 +126,16 @@ shinyServer(function(input, output, session) {
       ## add facet, increasing height if selected facet has many different levels
       if (!(input$location_facet %in% c("Target_Type", "Model_Type"))){
         ggplotly(p + labs(x = "Epiweek", y = loc_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-        layout(height = 800,  margin = list(l = 80, b = 90)) #adjust x and y margin so axis labels are not cut off
+        plotly::layout(height = 800,  margin = list(l = 80, b = 90)) #adjust x and y margin so axis labels are not cut off
       ## else if target or model type selected, height is normal 
       } else {
         ggplotly(p + labs(x = "Epiweek", y = loc_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-        layout(height = 550,  margin = list(l = 80, b = 90))
+        plotly::layout(height = 550,  margin = list(l = 80, b = 90))
       }
     ## otherwise, output plot with regular height   
     } else {
       ggplotly(p + labs(x = "Epiweek", y = loc_y), tooltip=c("x","y","colour")) %>% 
-      layout(height = 550)
+      plotly::layout(height = 550)
     }
   })
   
@@ -181,14 +181,14 @@ shinyServer(function(input, output, session) {
       p = p + facet_wrap(as.formula(paste("~", input$season_facet)))#, scales="free_x")
       if (!(input$season_facet %in% c("Target_Type", "Model_Type"))){
         ggplotly(p + labs(x = "Epiweek", y = seas_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 800, autosize=TRUE, margin = list(l = 80, b = 90))
+          plotly::layout(height = 800, autosize=TRUE, margin = list(l = 80, b = 90))
       } else {
         ggplotly(p + labs(x = "Epiweek", y = seas_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 550, autosize = TRUE, margin = list(l = 80, b = 90))
+          plotly::layout(height = 550, autosize = TRUE, margin = list(l = 80, b = 90))
       }
     } else {
       ggplotly(p + labs(x = "Epiweek", y = seas_y), tooltip=c("x","y","colour")) %>% 
-        layout(height = 550, autosize = TRUE)
+        plotly::layout(height = 550, autosize = TRUE)
     }
   })
   
@@ -233,14 +233,14 @@ shinyServer(function(input, output, session) {
       p = p + facet_wrap(as.formula(paste("~", input$model_facet)))#, scales = "free_x")
       if (!(input$model_facet %in% c("Target_Type", "Model_Type"))){
         ggplotly(p + labs(x = "Epiweek", y = mod_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 800, autosize=TRUE, margin = list(l = 80, b = 90))
+          plotly::layout(height = 800, autosize=TRUE, margin = list(l = 80, b = 90))
       } else {
         ggplotly(p + labs(x = "Epiweek", y = mod_y) + scale_x_discrete(breaks = c(seq(43, 52, by = 2), seq(1, 18, by = 2))), tooltip=c("x","y","colour")) %>% 
-          layout(height = 550, autosize = TRUE, margin = list(l = 80, b = 90))
+          plotly::layout(height = 550, autosize = TRUE, margin = list(l = 80, b = 90))
       }
     } else {
       ggplotly(p + labs(x = "Epiweek", y = mod_y), tooltip=c("x","y","colour")) %>% 
-        layout(height = 550, autosize = TRUE)
+        plotly::layout(height = 550, autosize = TRUE)
     }
   })
   

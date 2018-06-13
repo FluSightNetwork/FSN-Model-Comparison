@@ -31,12 +31,12 @@ ui <- shinyUI(
       }
                      .selectize-input {
                         padding: 8px;
-                        height: 10px !important;
-                        width: 150px;
+                        height: 14px;
+                        width: 185px;
                       }
                       .selectize-dropdown {
-                        width: 150px;
-                        line-height: 10px; !important
+                        width: 185px;
+                        line-height: 14px;
                         float: left;
                         text-align: left;
                       }'
